@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/context
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="fileEncoding" value="utf-8" />
+		<property name="locations">
+			<list>
+				<value>classpath*:gx-prober.properties</value>
+			</list>
+		</property>
+	</bean>
+
+
+	<!-- ********************************* 基础配置 ********************************* -->
+	<!-- 配置01、JobHandler 扫描路径 -->
+	<context:component-scan
+		base-package="com.geostax.prober.handler,com.geostax.prober.dao" />
+
+	<!-- 配置02、Datastore -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="${xxl.job.db.driverClass}" />
+		<property name="jdbcUrl" value="${xxl.job.db.url}" />
+		<property name="user" value="${xxl.job.db.user}" />
+		<property name="password" value="${xxl.job.db.password}" />
+		<property name="initialPoolSize" value="3" />
+		<property name="minPoolSize" value="2" />
+		<property name="maxPoolSize" value="10" />
+		<property name="maxIdleTime" value="60" />
+		<property name="acquireRetryDelay" value="1000" />
+		<property name="acquireRetryAttempts" value="10" />
+		<property name="preferredTestQuery" value="SELECT 1" />
+	</bean>
+
+	<bean id="mbean" class="com.geostax.prober.util.MBeanUtil" />
+	<bean id="mbeanTool" class="com.geostax.prober.util.MBeanTool" />
+	<bean id="sigarTool" class="com.geostax.prober.util.SigarTool">
+		<property name="dll" value="${sigar.dll.dir}" />
+	</bean>
+	<bean id="proberTool" class="com.geostax.prober.util.ProberTool">
+		<property name="sigar" value="${sigar.dll.dir}" />
+		<property name="mbean" ref="mbean" />
+	</bean>
+
+	<bean id="cassandraManager" class="com.geostax.prober.CassandraManager"
+		init-method="init" destroy-method="stop">
+		<property name="dc" value="${cassandra.dc}" />
+		<property name="rack" value="${cassandra.rack}" />
+		<property name="host" value="${cassandra.host}" />
+		<property name="port" value="${cassandra.port}" />
+		<property name="user" value="${cassandra.user}" />
+		<property name="pwd" value="${cassandra.pwd}" />
+	</bean>
+
+	<!-- ********************************* part 3 :for xxl-job scheduler ********************************* -->
+
+	<bean id="quartzScheduler" lazy-init="false"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="autoStartup" value="true" />			<!--自动启动 -->
+		<property name="startupDelay" value="20" />				<!--延时启动，应用启动成功后在启动 -->
+		<property name="overwriteExistingJobs" value="true" />	<!--覆盖DB中JOB：true、以数据库中已经存在的为准：false -->
+		<property name="applicationContextSchedulerContextKey" value="applicationContextKey" />
+		<property name="configLocation" value="classpath:quartz.properties" />
+	</bean>
+
+	<!-- 配置03、GX-Prober -->
+	<bean id="prober" class="com.geostax.prober.GXProber" init-method="start"
+		destroy-method="destroy">
+		<!-- 执行器IP[选填]，为空则自动获取 -->
+		<property name="ip" value="${xxl.job.executor.ip}" />
+		<!-- 执行器端口号[必须] -->
+		<property name="port" value="${xxl.job.executor.port}" />
+		<!-- 执行器AppName[选填]，为空则关闭自动注册 -->
+		<property name="appName" value="${xxl.job.executor.appname}" />
+		<!-- 执行器注册中心地址[选填]，为空则关闭自动注册 -->
+		<property name="adminAddresses" value="${xxl.job.admin.addresses}" />
+		<!-- 执行器日志路径[必填] -->
+		<property name="logPath" value="${xxl.job.executor.logpath}" />
+		<property name="scheduler" ref="quartzScheduler" />
+		<property name="cassandraManager" ref="cassandraManager" />
+	</bean>
+
+
+</beans>
