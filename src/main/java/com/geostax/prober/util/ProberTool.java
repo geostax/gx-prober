@@ -1,55 +1,51 @@
 package com.geostax.prober.util;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.net.InetAddress;
+import java.io.InputStreamReader;
 import java.text.DecimalFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import org.hyperic.sigar.CpuInfo;
 import org.hyperic.sigar.CpuPerc;
-import org.hyperic.sigar.Mem;
 import org.hyperic.sigar.Sigar;
 import org.hyperic.sigar.SigarException;
+
+import com.google.gson.Gson;
 
 public class ProberTool {
 
 	private String sigar;
-	private MBeanUtil mbean;
+	Gson gson=new Gson();
 	
 	public void setSigar(String sigar) {
 		this.sigar = sigar;
 	}
 	
-	public void setMbean(MBeanUtil mbean) {
-		this.mbean = mbean;
-	}
 
 	public String getSysInfo() throws Exception {
 		
-		System.load(sigar);
-		Sigar sigar = new Sigar();
-		Map<String, String> items = mbean.getMBean();
+		Map<String, String> items=null;
+		Runtime runtime = Runtime.getRuntime();
+		try {
+			Process pr = runtime.exec(
+					"cmd /c java -classpath .;%JAVA_HOME%\\lib;%JAVA_HOME%\\lib\\tools.jar;C:\\Users\\Phil\\Desktop\\gx-mbean.jar com.geostax.MBeanTest");
+			BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream(), "GBK"));
+			String line = null;
+			while ((line = input.readLine()) != null) {
+				items=gson.fromJson(line, Map.class);
+				System.out.println(items);
+			}
+		} catch (Exception e) {
+			System.out.println("Error!");
+		}
 
 		// Disk
 		Map<String, Object> data = new HashMap<>();
 		String path = System.getenv().get("CASSANDRA_HOME");
 		File file = new File(path);
 		DecimalFormat df = new DecimalFormat("#.00");
-		data.put("disk_usage", df.format(Double.parseDouble(items.get("StorageLoad")) / 1024.0 / 1024 / 1024)); // GB
-		data.put("disk_free", df.format(file.getFreeSpace() / 1024.0 / 1024 / 1024)); // GB
-		
-		// CPU
-		double cpu_usage = cpu(sigar);
-		data.put("cpu_usage", cpu_usage);
-		data.put("cpu_free", 1 - cpu_usage);
-		// Memory
-		Mem mem = sigar.getMem();
-		data.put("mem_total", df.format( mem.getTotal() / 1024.0 / 1024 / 1024));
-		data.put("mem_used",  df.format(mem.getUsed() / 1024.0 / 1024 / 1024));
-		data.put("mem_free",  df.format(mem.getFree() / 1024.0 / 1024 / 1024));
 
 		// Cassandra
 		data.put("ClientRequestWriteLatency", items.get("ClientRequestWriteLatency"));

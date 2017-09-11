@@ -38,14 +38,11 @@
 		<property name="preferredTestQuery" value="SELECT 1" />
 	</bean>
 
-	<bean id="mbean" class="com.geostax.prober.util.MBeanUtil" />
-	<bean id="mbeanTool" class="com.geostax.prober.util.MBeanTool" />
 	<bean id="sigarTool" class="com.geostax.prober.util.SigarTool">
 		<property name="dll" value="${sigar.dll.dir}" />
 	</bean>
 	<bean id="proberTool" class="com.geostax.prober.util.ProberTool">
 		<property name="sigar" value="${sigar.dll.dir}" />
-		<property name="mbean" ref="mbean" />
 	</bean>
 
 	<bean id="cassandraManager" class="com.geostax.prober.CassandraManager"

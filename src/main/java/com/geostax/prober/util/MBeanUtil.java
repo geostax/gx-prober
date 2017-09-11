@@ -80,6 +80,8 @@ public class MBeanUtil {
 
 	public Map<String, String> getMBean() throws Exception {
 		for (Object vmInstance : allvm) {
+			if(!vmInstance.toString().contains("CassandraDaemon"))continue;
+			System.out.println(vmInstance);
 			String id = (String) getVMId.invoke(vmInstance, (Object[]) null);
 			Object vm = attachToVM.invoke(null, id);
 			Properties systemProperties = (Properties) getSystemProperties.invoke(vm, (Object[]) null);

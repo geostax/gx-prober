@@ -36,7 +36,6 @@ import com.geostax.prober.mapper.Node;
 import com.geostax.prober.rpc.netcom.NetComServerFactory;
 import com.geostax.prober.thread.JobThread;
 import com.geostax.prober.util.AdminApiUtil;
-import com.geostax.prober.util.MBeanTool;
 import com.geostax.prober.util.ProberTool;
 import com.geostax.prober.util.SigarTool;
 
@@ -53,7 +52,6 @@ public class GXProber implements ApplicationContextAware, ApplicationListener {
 	public static String address;
 	public static SigarTool sigarTool;
 	public static ProberTool proberTool;
-	public static MBeanTool mbeanTool;
 	public static ProberDao proberDao;
 	public static CassandraManager cassandraManager;
 
@@ -64,8 +62,8 @@ public class GXProber implements ApplicationContextAware, ApplicationListener {
 		GXProber.scheduler = scheduler;
 		try {
 			
-			//removeJob("1", "1");
-			//removeJob("2", "1");
+			removeJob("1", "1");
+			removeJob("2", "1");
 			//Collect status of this node every 10 sec
 			addJob(StatusCollectJobBean.class,"1", "1", "*/10 * * * * ?");
 			//Write status to storage every 1 min
@@ -158,7 +156,6 @@ public class GXProber implements ApplicationContextAware, ApplicationListener {
 		GXProber.proberDao = applicationContext.getBean(ProberDao.class);
 		GXProber.proberTool = (ProberTool) applicationContext.getBean("proberTool");
 		GXProber.sigarTool=(SigarTool)applicationContext.getBean("sigarTool");
-		GXProber.mbeanTool=(MBeanTool)applicationContext.getBean("mbeanTool");
 		
 		// Register this node
 		Node node = new Node();
@@ -294,9 +291,7 @@ public class GXProber implements ApplicationContextAware, ApplicationListener {
 		Date date = scheduler.scheduleJob(jobDetail, cronTrigger);
 
 		logger.info(">>>>>>>>>>> addJob success, jobDetail:{}, cronTrigger:{}, date:{}", jobDetail, cronTrigger, date);
-		System.out.println(proberDao);
-		proberDao.addLog(new Date(), "正常", "新建调度任务：" + jobDetail.getDescription(), "");
-
+		
 		return true;
 	}
 

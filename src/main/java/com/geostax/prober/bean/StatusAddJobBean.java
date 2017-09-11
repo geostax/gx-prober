@@ -45,7 +45,7 @@ public class StatusAddJobBean extends QuartzJobBean {
 			String statusInfo = GXProber.proberTool.getSysInfo();
 			Map<String, Object> data = null;
 			data = (Map<String, Object>) JSONUtil.fromJson(statusInfo, Map.class);	
-			
+			Map<String, Object> sysinfo=GXProber.sigarTool.getSystemInfo();
 			Date now = new Date();
 			Status status = new Status();
 			status.setIp(GXProber.address);
@@ -53,11 +53,11 @@ public class StatusAddJobBean extends QuartzJobBean {
 			status.setBucket(df.format(now));
 			status.setTime(now);
 			status.setStatus(getState());
-			status.setCpu(Double.parseDouble(data.get("cpu_usage").toString()));
-			status.setDisk_free(Double.parseDouble(data.get("disk_free").toString()));
-			status.setDisk_usage(Double.parseDouble(data.get("disk_usage").toString()));
-			status.setRam_free(Double.parseDouble(data.get("mem_free").toString()));
-			status.setRam_usage(Double.parseDouble(data.get("mem_used").toString()));
+			status.setCpu((double)sysinfo.get("cpu_usage"));
+			status.setDisk_free((double)sysinfo.get("disk_free"));
+			status.setDisk_usage((double)sysinfo.get("disk_usage"));
+			status.setRam_free((double)sysinfo.get("ram_free"));
+			status.setRam_usage((double)sysinfo.get("ram_usage"));
 			status.setWf(Double.parseDouble(data.get("ClientRequestWriteFailures").toString()));
 			status.setWl(Double.parseDouble(data.get("ClientRequestWriteLatency").toString()));
 			status.setWt(Double.parseDouble(data.get("ClientRequestWriteTimeouts").toString()));
@@ -66,8 +66,8 @@ public class StatusAddJobBean extends QuartzJobBean {
 			status.setRt(Double.parseDouble(data.get("ClientRequestReadTimeouts").toString()));
 			GXProber.proberDao.addStatus(status);
 
-			double mem_free = Double.parseDouble(data.get("mem_free").toString());
-			double mem_usage = Double.parseDouble(data.get("mem_used").toString());
+			double mem_free = (double)sysinfo.get("ram_free");
+			double mem_usage =(double)sysinfo.get("ram_usage");
 			DecimalFormat df1 = new DecimalFormat("#.0");
 			if (mem_usage / (mem_free + mem_usage) >= 0.8) {
 				GXProber.proberDao.addLog(new Date(), "严重",
