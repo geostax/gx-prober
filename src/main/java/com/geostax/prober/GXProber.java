@@ -49,29 +49,42 @@ public class GXProber implements ApplicationContextAware, ApplicationListener {
 	private String adminAddresses;
 	public static String logPath;
 
+	//Address of Local Host
 	public static String address;
+	
+	//Sigar tool
 	public static SigarTool sigarTool;
+	
+	//Prober tool
 	public static ProberTool proberTool;
+	
+	//Prober DAO for data operation
 	public static ProberDao proberDao;
+	
+	//Cassandra Management Object
 	public static CassandraManager cassandraManager;
+	
+	//MBean util object 
+	public static String mbean;
 
-	// Scheduler
+	// Quartz Scheduler
 	private static Scheduler scheduler;
 
 	public void setScheduler(Scheduler scheduler) {
 		GXProber.scheduler = scheduler;
 		try {
-			
-			removeJob("1", "1");
-			removeJob("2", "1");
-			//Collect status of this node every 10 sec
+			//Job-ID: 1-1 Collect status of this node every 10 sec
 			addJob(StatusCollectJobBean.class,"1", "1", "*/10 * * * * ?");
-			//Write status to storage every 1 min
+			//Job-ID: 1-2 Write status to Cassandra every 1 min
 			addJob(StatusAddJobBean.class,"2", "1", "0 */1 * * * ?");
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
+	}
+	
+	public static void setMbean(String mbean) {
+		GXProber.mbean = mbean;
 	}
 	
 	public static void setCassandraManager(CassandraManager cassandraManager) {
@@ -153,6 +166,7 @@ public class GXProber implements ApplicationContextAware, ApplicationListener {
 	@Override
 	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		GXProber.applicationContext = applicationContext;
+		
 		GXProber.proberDao = applicationContext.getBean(ProberDao.class);
 		GXProber.proberTool = (ProberTool) applicationContext.getBean("proberTool");
 		GXProber.sigarTool=(SigarTool)applicationContext.getBean("sigarTool");

@@ -33,7 +33,6 @@ public class StatusCollectJobBean extends QuartzJobBean {
 
 		// do trigger
 		ReturnT<String> triggerResult = doTrigger(triggerParam);
-
 	}
 
 	public ReturnT<String> doTrigger(TriggerParam triggerParam) {

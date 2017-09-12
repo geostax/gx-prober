@@ -71,14 +71,14 @@ public class StatusAddJobBean extends QuartzJobBean {
 			DecimalFormat df1 = new DecimalFormat("#.0");
 			if (mem_usage / (mem_free + mem_usage) >= 0.8) {
 				GXProber.proberDao.addLog(new Date(), "严重",
-						"节点(127.0.0.1) 的内存使用警告：" + df1.format(mem_usage*100.0 / (mem_free + mem_usage)) + "%", "");
+						"节点 (127.0.0.1) 的内存使用警告：" + df1.format(mem_usage*100.0 / (mem_free + mem_usage)) + "%", "");
 			} else if (mem_usage / (mem_free + mem_usage) >=0.9) {
 				GXProber.proberDao.addLog(new Date(), "严重",
-						"节点(127.0.0.1) 的内存使用警告：" + df1.format(mem_usage*100.0 / (mem_free + mem_usage)) + "%", "");
+						"节点 (127.0.0.1) 的内存使用警告：" + df1.format(mem_usage*100.0 / (mem_free + mem_usage)) + "%", "");
 
 			} else if (mem_usage / (mem_free + mem_usage) >=0.95) {
 				GXProber.proberDao.addLog(new Date(), "紧急",
-						"节点(127.0.0.1) 的内存使用警告：" + df1.format(mem_usage*100.0 / (mem_free + mem_usage)) + "%", "");
+						"节点 (127.0.0.1) 的内存使用警告：" + df1.format(mem_usage*100.0 / (mem_free + mem_usage)) + "%", "");
 
 			}
 

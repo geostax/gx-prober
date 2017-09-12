@@ -3,11 +3,11 @@ CREATE TABLE gx_prober.node (
 	cpu_core int,
 	cpu_hz text,
 	datacenter text,
-	disk bigint,
+	disk double,
 	host_id text,
 	name text,
 	rack text,
-	ram bigint,
+	ram double,
 	tokens int,
 	PRIMARY KEY (ip)
 );
@@ -55,7 +55,7 @@ CREATE TABLE gx_prober.log (
 	ip text,
 	bucket text,
 	time timestamp,
-	dc text,
+	datacenter text,
 	info text,
 	msg text,
 	rack text,

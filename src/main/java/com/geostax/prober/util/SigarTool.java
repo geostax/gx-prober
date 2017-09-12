@@ -52,7 +52,6 @@ public class SigarTool {
 	public final static String NET_RX_DROP="net_RxDropped";
 	public final static String NET_TX_DROP="net_TxDropped";
 	
-	//"E:\\项目备份\\监控\\gx-prober\\lib\\sigar-amd64-winnt.dll"
 	private String dll;
 	public void setDll(String dll) {
 		this.dll = dll;
