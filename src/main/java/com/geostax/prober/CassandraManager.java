@@ -69,14 +69,11 @@ public class CassandraManager {
 		}
 		return session;
 	}
-	
-	
-	public Set<Host> getHosts(){
+
+	public Set<Host> getHosts() {
 		return cluster.getMetadata().getAllHosts();
 	}
-	
 
-	
 	public void stop() {
 		cluster.close();
 	}

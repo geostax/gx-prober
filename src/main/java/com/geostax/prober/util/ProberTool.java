@@ -29,7 +29,7 @@ public class ProberTool {
 		Runtime runtime = Runtime.getRuntime();
 		try {
 			Process pr = runtime.exec("cmd /c java -classpath .;%JAVA_HOME%\\lib;%JAVA_HOME%\\lib\\tools.jar;"
-					+ GXProber.mbean + " com.geostax.MBeanTest");
+					+ GXProber.mbean + " com.geostax.mbean.MBeanTool");
 			BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream(), "GBK"));
 			String line = null;
 			while ((line = input.readLine()) != null) {

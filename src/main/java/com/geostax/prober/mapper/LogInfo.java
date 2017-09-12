@@ -16,7 +16,7 @@ public class LogInfo {
 	@ClusteringColumn
 	Date time;
 	
-	String dc;
+	String datacenter;
 	String info;
 	String msg;
 	String rack;
@@ -39,11 +39,12 @@ public class LogInfo {
 	public void setTime(Date time) {
 		this.time = time;
 	}
-	public String getDc() {
-		return dc;
+	
+	public String getDatacenter() {
+		return datacenter;
 	}
-	public void setDc(String dc) {
-		this.dc = dc;
+	public void setDatacenter(String datacenter) {
+		this.datacenter = datacenter;
 	}
 	public String getInfo() {
 		return info;

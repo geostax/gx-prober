@@ -82,7 +82,7 @@ public class ProberDaoImpl implements ProberDao {
         DateFormat df = new SimpleDateFormat("yyyy-MM");
         
         LogInfo logInfo=new LogInfo();
-        logInfo.setDc(dc);
+        logInfo.setDatacenter(dc);
         logInfo.setRack(rack);
         logInfo.setBucket(df.format(date));
         logInfo.setIp(cassandraManager.getHost());
